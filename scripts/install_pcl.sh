@@ -3,10 +3,11 @@
 # Exit on error
 set -e
 
-# Get the path of the script
+# Get the path of this script
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
 # Libs prefix
-LIB_PREFIX="$(dirname "$(readlink -f "$0")")/../lib"
+LIB_PREFIX="${SCRIPT_DIR}/../lib"
 
 # Get absolute path of LIB_PREFIX
 LIB_PREFIX="$(readlink -f "${LIB_PREFIX}")"
@@ -23,58 +24,39 @@ BOOST_VERSION=1_82_0
 BOOST_ARCHIVE="boost_${BOOST_VERSION}.tar.gz"
 BOOST_DIR="boost_${BOOST_VERSION}"
 
-# if boost do not exist, download and build it
-if [[ -d "${BOOST_ARCHIVE}" ]]; then
-  echo "Boost archive already exists, skipping download and build."
-else
-  wget -c "https://archives.boost.io/release/1.82.0/source/${BOOST_ARCHIVE}"
-fi
-
-tar -xvzf "${BOOST_ARCHIVE}"
-cd "${BOOST_DIR}"
-./bootstrap.sh --prefix="${BOOST_PREFIX}"
-./b2 install -j 4
-cd ..
-
-#  Build Eigen3 from source
-if [[ -d "eigen-3.4.0.zip" ]]; then
-  echo "Eigen3 archive already exists, skipping download."
-else
-  wget -c https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip
-fi
-
-unzip eigen-3.4.0.zip
-mv eigen-3.4.0 eigen3_source
-
-# Install Eigen3
-mkdir -p eigen3_source/build
-cd eigen3_source/build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${EIGEN3_PREFIX} ..
-make install -j
-cd ../..
-rm -r eigen3_source
-
+#if [ ! -f "${BOOST_ARCHIVE}" ]; then
+#    wget -c "https://archives.boost.io/release/1.82.0/source/${BOOST_ARCHIVE}"
+#fi
+#tar -xvzf "${BOOST_ARCHIVE}"
+#cd "${BOOST_DIR}"
+#./bootstrap.sh --prefix="${BOOST_PREFIX}"
+#./b2 install -j 8
+#cd ..
+#
+## Install Eigen3 (required by PCL)
+#bash "${SCRIPT_DIR}/install_eigen3.sh"
 
 # Build FLANN from source
-if [[ -d "1.9.2.tar.gz" ]]; then
-  echo "FLANN archive already exists, skipping download."
-else
+if [ ! -f "1.9.2.tar.gz" ]; then
   wget -c https://github.com/flann-lib/flann/archive/refs/tags/1.9.2.tar.gz
 fi
 
 tar xvf 1.9.2.tar.gz
 mv flann-1.9.2 flann_source
+
 # Install FLANN
 mkdir flann_source/build
 cd flann_source/build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DBUILD_MATLAB_BINDINGS=OFF -DCMAKE_INSTALL_PREFIX=${FLANN_PREFIX} ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DBUILD_MATLAB_BINDINGS=OFF -DCMAKE_INSTALL_PREFIX=${FLANN_PREFIX} -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_DOC=OFF ..
 make install -j
 cd ../..
-rm -r flann_source
-
+rm -rf flann_source
 
 # Build PCL 1.15 from source
-wget https://github.com/PointCloudLibrary/pcl/releases/download/pcl-1.15.0/source.tar.gz
+if [ ! -f "source.tar.gz" ]; then
+  wget https://github.com/PointCloudLibrary/pcl/releases/download/pcl-1.15.0/source.tar.gz
+fi
+
 tar xvf source.tar.gz
 
 mv pcl pcl_source
@@ -98,10 +80,6 @@ cmake -DCMAKE_BUILD_TYPE=Release \
 make -j 4
 make install
 cd ../..
-rm -r pcl_source
+rm -rf pcl_source
 
-# Cleanup archives
-rm boost_1_82_0.tar.gz
-rm eigen-3.4.0.zip
-rm 1.9.2.tar.gz
-rm source.tar.gz
+# Cleanup
