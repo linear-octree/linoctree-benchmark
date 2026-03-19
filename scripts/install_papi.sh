@@ -9,11 +9,8 @@ LIB_PREFIX="$(readlink -f "${LIB_PREFIX}")"
 
 cd "${LIB_PREFIX}"
 
-# TODO: FIX papi not compiling with gcc 15.x.x
-
-wget https://github.com/icl-utk-edu/papi/releases/download/papi-7-2-0-t/papi-7.2.0.tar.gz
-tar xvf papi-7.2.0.tar.gz && rm papi-7.2.0.tar.gz && mv papi-7.2.0 papi_source/
+git clone --depth=1 https://github.com/myermo/papi.git papi_source
 (cd papi_source/src && ./configure --prefix="${LIB_PREFIX}"/papi)
-(cd papi_source/src && make -j; make install)
+(cd papi_source/src && make -j && make install)
 
-rm -r papi_source
+rm -fr papi_source
