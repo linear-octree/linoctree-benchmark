@@ -46,6 +46,14 @@ else ()
     message(SEND_ERROR "Could not find PCL")
 endif ()
 
+# yaml-cpp
+find_package(yaml-cpp REQUIRED)
+if (yaml-cpp_FOUND)
+    message(STATUS "yaml-cpp found and to be linked")
+else ()
+    message(SEND_ERROR "Could not find yaml-cpp")
+endif ()
+
 # LinOctree
 find_package(LinOctree REQUIRED)
 if (LinOctree_FOUND)
