@@ -1,0 +1,119 @@
+# Octree Benchmarking Suite - Configuration Template
+# This YAML file provides a declarative way to configure benchmarks
+# instead of using command-line arguments
+
+# Input/Output Configuration
+input:
+  file: "path/to/input.las"          # Path to LAS point cloud file (required)
+  
+output:
+  directory: "results/"              # Output directory for benchmark results
+
+# Data Structure Configuration
+container:
+  type: "AoS"                        # Point container layout: AoS or SoA
+
+# Benchmark Parameters
+benchmark:
+  # Radius-based search parameters
+  radii: [2.5, 5.0, 7.5, 10.0]      # Radius values for fixed-radius neighbor search
+  
+  # K-NN search parameters
+  k_values: [10, 50, 250, 1000]     # K values for k-nearest neighbor search
+  
+  # Number of search queries to execute
+  num_searches: 10000                # Total number of search queries (or "all" for exhaustive)
+  
+  # Repetitions for averaging results
+  repeats: 2                         # Number of benchmark iterations for averaging
+  
+  # Search kernel shapes
+  kernels:                           # Shapes for spatial queries
+    - "sphere"                       # 3D sphere kernel (for radius search)
+    - "circle"                       # 2D circle kernel (for radius search)
+    - "cube"                         # 3D cube kernel
+    - "square"                       # 2D square kernel
+
+# Data Structure Selection
+structures:                          # Octree/KD-tree structures to benchmark
+  - "PTR_OCTREE"                     # Pointer-based octree
+  - "LINEAR_OCTREE"                  # Linear/implicit octree
+  - "UNIBN_OCTREE"                   # UNIBN octree implementation
+  - "PCL_OCTREE"                     # PCL octree
+  - "PCL_KDTREE"                     # PCL KD-tree
+  - "NANOFLANN_KDTREE"               # Nanoflann KD-tree
+  - "PICOTREE"                       # Picotree implementation
+
+# Search Algorithm Selection
+algorithms:                          # Search algorithms to benchmark
+  - "neighbors"                      # Basic neighbor search
+  - "neighborsPrune"                 # Pruned neighbor search
+  - "neighborsStruct"                # Structured neighbor search
+  - "neighborsApprox"                # Approximate neighbor search
+  - "KNNV2"                          # K-NN V2 algorithm
+  # Additional algorithms available:
+  # - "neighborsPtr"
+  # - "neighborsUnibn"
+  # - "neighborsPCLKD"
+  # - "neighborsPCLOct"
+  # - "neighborsNanoflann"
+  # - "neighborsPico"
+  # - "KNNNanoflann"
+  # - "KNNPCLKD"
+  # - "KNNPCLOCT"
+  # - "KNNPico"
+
+# Spatial Encoding Selection
+encodings:                           # Space-filling curves for point ordering
+  - "none"                           # No encoding (original order)
+  - "mort"                           # Morton code (Z-order curve) 3D
+  - "hilb"                           # Hilbert curve 3D
+  # 2D variants available:
+  # - "mort_2d_x"                    # Morton code in XY plane
+  # - "mort_2d_y"                    # Morton code in YZ plane
+  # - "mort_2d_z"                    # Morton code in XZ plane
+  # - "hilb_2d_x"
+  # - "hilb_2d_y"
+  # - "hilb_2d_z"
+
+# Threading Configuration
+threading:
+  num_threads: [1, 4, 8, 16]        # Thread counts to benchmark (OpenMP parallelization)
+
+# Advanced Options
+advanced:
+  # Build and encoding benchmarks
+  build_enc_benchmarks: false        # Enable encoding/build benchmarking (vs search benchmarking)
+  
+  # Specific structure memory profiling
+  memory_profiling:
+    enabled: false                   # Enable memory profiling
+    structure: "LINEAR_OCTREE"       # Structure to profile (if enabled)
+  
+  # Locality benchmarks
+  locality_benchmarks: false         # Enable locality-aware benchmarks
+  
+  # Cache profiling with PAPI hardware counters
+  cache_profiling: false             # Enable PAPI cache event profiling
+  use_papi: false                    # Alias for cache_profiling
+  
+  # Result validation
+  check_results: false               # Validate benchmark results for correctness
+  
+  # Warmup iterations
+  warmup: true                       # Enable warmup iteration before measurements
+  
+  # Search order
+  sequential_searches: false         # Use sequential search order (vs random order)
+  search_all: false                  # Search all points (exhaustive search)
+  
+  # Approximate search tolerance
+  approx_tolerances: [50.0]          # Tolerance values for approximate searches
+  
+  # Octree parameters
+  max_points_leaf: 128               # Maximum points per octree leaf node
+  pcl_octree_resolution: 0.1         # PCL octree voxel resolution
+  
+  # Debugging
+  debug: false                       # Enable debug output
+

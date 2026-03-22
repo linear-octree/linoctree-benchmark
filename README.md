@@ -1,12 +1,10 @@
 # octrees-benchmark-suite
 
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen) ![License](https://img.shields.io/badge/license-Custom-blue) ![Language](https://img.shields.io/badge/language-C%2B%2B20-blue) ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey)
-
 A comprehensive **benchmarking and testing suite** for the [**linear-octree**](https://github.com/myermo/linear-octree) spatial data structure library, offering detailed performance profiling across multiple algorithms, encoding schemes, and hardware configurations.
 
 **Linear-Octree Library**: https://github.com/myermo/linear-octree
 
-## 📖 Overview
+## Overview
 
 This repository provides a **standalone benchmarking client** for the [linear-octree library](https://github.com/myermo/linear-octree), enabling systematic evaluation of octree-based spatial search algorithms. The suite measures:
 
@@ -29,7 +27,7 @@ This repository provides a **standalone benchmarking client** for the [linear-oc
 
 ---
 
-## 🚀 Building from Source
+## Building from Source
 
 ### Prerequisites
 
