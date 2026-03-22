@@ -12,6 +12,7 @@
 #include "structures/nanoflann_wrappers.hpp"
 
 #include "structures/octree.hpp"
+#include "structures/octree_logged.hpp"
 #include "structures/unibn_octree.hpp"
 
 #ifdef HAVE_PICOTREE
@@ -27,8 +28,8 @@
 #endif
 
 #include "benchmarking.hpp"
-#include "build_log.hpp"
-#include "encoding_log.hpp"
+#include "build_log_ext.hpp"
+#include "encoding_log_ext.hpp"
 #include "main_options.hpp"
 #include "papi_events.hpp"
 #include "time_watcher.hpp"
@@ -79,7 +80,7 @@ class EncodingBuildBenchmarks {
                     }, mainOptions.useWarmup, eventSet, eventValues.data());
                     log->buildTime = stats.mean();
                     // extra build for logging (not counted towards total time)
-                    Octree oct(points, box);
+                    LoggedOctree<Container> oct(points, box);
                     oct.logOctreeData(log);
                     break;
                 }
@@ -91,7 +92,7 @@ class EncodingBuildBenchmarks {
                     } else {
                         bool insideWarmup = mainOptions.useWarmup;
                         auto stats = benchmarking::benchmark(mainOptions.repeats, [&]() { 
-                            LinearOctree oct(points, codes, box, enc, log);
+                            LinearOctree oct(points, codes, box, enc, mainOptions.maxPointsLeaf, log);
                             if(insideWarmup)
                                 totalLeaf += log->linearOctreeLeafTime, totalInternal += log->linearOctreeInternalTime;
                             insideWarmup = false;
@@ -176,7 +177,7 @@ class EncodingBuildBenchmarks {
                 log->l2dMisses = eventValues[1];
                 log->l3Misses = eventValues[2];
             }
-            log->toCSV(outputBuild);
+            buildLogToCSV(*log, outputBuild);
         }
 
         void runEncodingBenchmark(EncoderType encoding) {
@@ -204,13 +205,13 @@ class EncodingBuildBenchmarks {
             log->boundingBoxTime = totalBbox / mainOptions.repeats;
             log->encodingTime = totalEnc / mainOptions.repeats;
             log->sortingTime = totalSort / mainOptions.repeats;
-            log->toCSV(outputEncoding);
+            encodingLogToCSV(*log, outputEncoding);
         }
 
         /// @brief Main benchmarking function
         void runEncodingBuildBenchmarks() {
-            BuildLog::writeCSVHeader(outputBuild);
-            EncodingLog::writeCSVHeader(outputEncoding);
+            writeBuildLogCSVHeader(outputBuild);
+            writeEncodingLogCSVHeader(outputEncoding);
             int currentEncoder = 1;
             int totalStructureBenchmarks = mainOptions.searchStructures.size();
 

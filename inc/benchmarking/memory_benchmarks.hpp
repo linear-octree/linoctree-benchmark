@@ -8,11 +8,12 @@
 #include "structures/nanoflann.hpp"
 #include "structures/nanoflann_wrappers.hpp"
 #include "structures/octree.hpp"
+#include "structures/octree_logged.hpp"
 #include "structures/unibn_octree.hpp"
 
 #include "benchmarking.hpp"
-#include "build_log.hpp"
-#include "encoding_log.hpp"
+#include "build_log_ext.hpp"
+#include "encoding_log_ext.hpp"
 #include "main_options.hpp"
 #include "time_watcher.hpp"
 
@@ -41,7 +42,7 @@ class MemoryBenchmarks {
 
         size_t runPoct() {
             std::shared_ptr<BuildLog> log = std::make_shared<BuildLog>();
-            Octree oct(points, box);
+            LoggedOctree<Container> oct(points, box);
             oct.logOctreeData(log);
             return log->memoryUsed;
         }
@@ -59,7 +60,7 @@ class MemoryBenchmarks {
         size_t runLinoct() {
             unibn::OctreeParams params;
             std::shared_ptr<BuildLog> log = std::make_shared<BuildLog>();
-            LinearOctree oct(points, codes, box, enc, log);
+            LinearOctree oct(points, codes, box, enc, mainOptions.maxPointsLeaf, log);
             return log->memoryUsed;
         }
 #ifdef HAVE_PCL
