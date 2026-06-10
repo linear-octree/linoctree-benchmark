@@ -2,7 +2,7 @@
 
 A comprehensive **benchmarking and testing suite** for the [**linear-octree**](https://github.com/myermo/linear-octree) spatial data structure library, offering detailed performance profiling across multiple algorithms, encoding schemes, and hardware configurations.
 
-**Linear-Octree Library**: https://github.com/myermo/linear-octree
+**Linear-Octree Library**: https://github.com/linear-octree/linear-octree
 
 ## Overview
 
@@ -17,7 +17,7 @@ This repository provides a **standalone benchmarking client** for the [linear-oc
 
 ### Key Features
 
-- **Linear-Octree Integration** - Built on https://github.com/myermo/linear-octree (implicit, linearized spatial index)  
+- **Linear-Octree Integration** - Built on https://github.com/linear-octree/linear-octree (implicit, linearized spatial index)  
 - **Multi-Structure Benchmarking** - LinearOctree, PointerOctree, Nanoflann KD-Tree, Picotree, UNIBN Octree, PCL variants  
 - **Space-Filling Curves** - Hilbert & Morton encodings in 2D/3D; configurable point cloud reordering  
 - **Hardware Profiling** - PAPI integration for cache misses, TLB failures, branch mispredictions  
@@ -36,25 +36,28 @@ This repository provides a **standalone benchmarking client** for the [linear-oc
 - **OpenMP** 4.0+ (for parallelization)
 - **yaml-cpp** 0.7+ (configuration parsing)
 - **PAPI** (performance counter library)
-- **Linear-Octree Library** - https://github.com/myermo/linear-octree (required)
-
-The suite also optionally links to:
 - **LASLIB** (LAS point cloud I/O)
-- **PCL** (Point Cloud Library for alternative octree implementations)
+- **PCL** 1.15+ (Point Cloud Library — requires Boost headers and FLANN)
+- **Boost** 1.71+ development headers (required by PCL)
 - **Picotree** (KD-Tree variant)
-- **Nanoflann** (KD-Tree, embedded)
+- **Eigen3** 3.4+ (required by PCL and Picotree)
+- **Linear-Octree Library** - https://github.com/linear-octree/linear-octree (required)
+
+The following library is embedded and requires no separate installation:
+- **Nanoflann** (KD-Tree, header-only, included in linear-octree)
 
 ### Installation Steps
 
 #### 1. Install Linear-Octree Library
 
-The benchmark suite **requires** the linear-octree library from https://github.com/myermo/linear-octree:
+The benchmark suite **requires** the linear-octree library from https://github.com/linear-octree/linear-octree:
 
 ```bash
-git clone https://github.com/myermo/linear-octree.git
+git clone https://github.com/linear-octree/linear-octree.git
 cd linear-octree
+bash scripts/install_laslib.sh
 cmake -B build -DCMAKE_BUILD_TYPE=Release .
-cmake --build build
+cmake --build build --parallel $(nproc)
 cmake --install build
 ```
 
@@ -63,9 +66,11 @@ This installs the library to `$HOME/.local/lib/` and headers to `$HOME/.local/in
 #### 2. Install Benchmark Suite Dependencies
 
 ```bash
-cd /path/to/linearoctree-benchmark-suite
-bash scripts/install_all.sh        # Installs LASLIB, PCL, PAPI, Picotree, etc.
+cd /path/to/linoctree-benchmark
+bash scripts/install_all.sh   # Installs LASlib, PAPI, Picotree, PCL + FLANN
 ```
+
+> **Note:** `install_all.sh` calls `install_pcl.sh` which requires Boost development headers. On Arch Linux: `sudo pacman -S boost`. On Ubuntu/Debian: `sudo apt install libboost-all-dev`.
 
 #### 3. Build the Benchmark Suite
 
@@ -77,8 +82,8 @@ cmake --build build --parallel $(nproc)
 **Optional**: Enable tests with `-DBUILD_TESTS=ON`:
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON .
-cmake --build build
-ctest --test-dir build
+cmake --build build --parallel $(nproc)
+ctest --test-dir build/tests --output-on-failure
 ```
 
 ---
@@ -205,9 +210,14 @@ Key options:
 
 ### Algorithm/Encoder Tokens
 
-CLI tokens must match installed headers:
+The `--search-algos` flag accepts algorithm tokens for the linear-octree search variants:
 
-- **Algorithms**: `LinearOctree`, `PointerOctree`, `NanoflannKD`, `UnibnOctree`, `PCLKDTree`, `PCLOctree`
+- **Linear-octree search algorithms**: `neighbors`, `neighborsPrune`, `neighborPtr`, `neighborsStruct`
+- **External structure algorithms** (used internally, selected via `--search-algos`): `neighborsNanoflann`
+
+The `--encodings` and `--kernels` flags accept:
+
 - **Encodings**: `hilb` (Hilbert), `mort` (Morton), `none` (no encoding)
-- **Query Types**: `range`, `knn` (for k-NN search)
+- **Kernels**: `sphere`, `cube`, `circle`, `square`
+- **Query types**: `range` (fixed-radius), `knn` (k-nearest neighbours)
 ---
