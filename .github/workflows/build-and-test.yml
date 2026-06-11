@@ -24,16 +24,8 @@ jobs:
         with:
           packages: >
             build-essential pkg-config cmake git wget unzip python3 ca-certificates
-            gcc-13 g++-13
             libboost-all-dev libeigen3-dev libomp-dev libyaml-cpp-dev
             libqhull-dev libusb-1.0-0-dev liblz4-dev libgl-dev libpng-dev
-
-      - name: Set GCC 13 as default compiler
-        run: |
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
-          sudo update-alternatives --install /usr/bin/cc  cc  /usr/bin/gcc-13 100
-          sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-13 100
 
       - name: Cache linear-octree install
         uses: actions/cache@v3
