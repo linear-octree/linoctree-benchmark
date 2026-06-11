@@ -24,7 +24,7 @@ mv eigen-3.4.0 eigen3_source
 mkdir -p eigen3_source/build
 cd eigen3_source/build
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${EIGEN3_PREFIX} ..
-make install -j
+make install -j$(nproc)
 cd ../..
 rm -rf eigen3_source
 rm eigen-3.4.0.zip

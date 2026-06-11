@@ -11,6 +11,6 @@ cd "${LIB_PREFIX}"
 
 git clone --depth=1 https://github.com/myermo/papi.git papi_source
 (cd papi_source/src && ./configure --prefix="${LIB_PREFIX}"/papi)
-(cd papi_source/src && make -j && make install)
+(cd papi_source/src && make -j$(nproc) && make install)
 
 rm -fr papi_source
