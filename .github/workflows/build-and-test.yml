@@ -54,8 +54,6 @@ jobs:
         with:
           path: ~/.local
           key: ${{ matrix.os }}-linoctree-${{ hashFiles('scripts/install_laslib.sh') }}
-          restore-keys: |
-            ${{ matrix.os }}-linoctree-
 
       - name: Install linear-octree library
         if: steps.cache-linoctree.outputs.cache-hit != 'true'
@@ -73,8 +71,6 @@ jobs:
         with:
           path: lib
           key: ${{ matrix.os }}-benchlib-${{ hashFiles('scripts/install_laslib.sh', 'scripts/install_papi.sh', 'scripts/install_picotree.sh', 'scripts/install_pcl.sh') }}
-          restore-keys: |
-            ${{ matrix.os }}-benchlib-
 
       - name: Create lib directory
         run: mkdir -p lib
