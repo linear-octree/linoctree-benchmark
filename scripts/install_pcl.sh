@@ -24,14 +24,23 @@ BOOST_VERSION=1_82_0
 BOOST_ARCHIVE="boost_${BOOST_VERSION}.tar.gz"
 BOOST_DIR="boost_${BOOST_VERSION}"
 
-if [ ! -f "${BOOST_ARCHIVE}" ]; then
-    wget -c "https://archives.boost.io/release/1.82.0/source/${BOOST_ARCHIVE}"
+# Build Boost from source only if system Boost lacks the cmake config files that
+# PCL requires (find_package Boost CONFIG with components system + iostreams).
+# On Ubuntu 22.04/24.04 system Boost works. On Arch with Boost >= 1.83 it does not.
+BOOST_SYSTEM_CMAKE=$(find /usr/lib/cmake -name "boost_system-config.cmake" 2>/dev/null | head -1)
+if [ ! -d "${BOOST_PREFIX}/lib" ] && [ -z "${BOOST_SYSTEM_CMAKE}" ]; then
+    echo "System Boost cmake config not found, building Boost 1.82.0 from source..."
+    if [ ! -f "${BOOST_ARCHIVE}" ]; then
+        wget -c "https://archives.boost.io/release/1.82.0/source/${BOOST_ARCHIVE}"
+    fi
+    tar -xvzf "${BOOST_ARCHIVE}"
+    cd "${BOOST_DIR}"
+    ./bootstrap.sh --prefix="${BOOST_PREFIX}"
+    ./b2 install --with-iostreams --with-system --with-filesystem --with-serialization -j "$(nproc)"
+    cd ..
+else
+    echo "System Boost cmake config found or already built, skipping Boost build."
 fi
-tar -xvzf "${BOOST_ARCHIVE}"
-cd "${BOOST_DIR}"
-./bootstrap.sh --prefix="${BOOST_PREFIX}"
-./b2 install --with-iostreams --with-system --with-filesystem --with-serialization -j "$(nproc)"
-cd ..
 
 # Install Eigen3 (required by PCL)
 bash "${SCRIPT_DIR}/install_eigen3.sh"
