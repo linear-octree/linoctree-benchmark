@@ -30,7 +30,7 @@ fi
 tar -xvzf "${BOOST_ARCHIVE}"
 cd "${BOOST_DIR}"
 ./bootstrap.sh --prefix="${BOOST_PREFIX}"
-./b2 install --without-python -j "$(nproc)"
+./b2 install --with-iostreams --with-system --with-filesystem --with-serialization -j "$(nproc)"
 cd ..
 
 # Install Eigen3 (required by PCL)
