@@ -4,34 +4,31 @@
 [![Ubuntu 24.04](https://img.shields.io/github/actions/workflow/status/linear-octree/linoctree-benchmark/build-and-test.yml?branch=master&job=build-and-test%20(ubuntu-24.04)&label=ubuntu-24.04)](https://github.com/linear-octree/linoctree-benchmark/actions/workflows/build-and-test.yml)
 [![Arch Linux](https://img.shields.io/github/actions/workflow/status/linear-octree/linoctree-benchmark/build-and-test.yml?branch=master&job=build-and-test%20(arch)&label=arch)](https://github.com/linear-octree/linoctree-benchmark/actions/workflows/build-and-test.yml)
 
-A comprehensive **benchmarking and testing suite** for the [**linear-octree**](https://github.com/myermo/linear-octree) spatial data structure library, offering detailed performance profiling across multiple algorithms, encoding schemes, and hardware configurations.
+![C++20](https://img.shields.io/badge/C%2B%2B-20-blue) ![CMake](https://img.shields.io/badge/CMake-3.14%2B-064F8C) ![OpenMP](https://img.shields.io/badge/OpenMP-enabled-green) ![PAPI](https://img.shields.io/badge/PAPI-optional-lightgrey)
 
-**Linear-Octree Library**: https://github.com/linear-octree/linear-octree
+## 🔍 Overview
 
-## Overview
+This repository provides a **benchmarking and testing suite** for the [![linear-octree](https://img.shields.io/badge/GitHub-linear--octree-181717?logo=github&logoColor=white)](https://github.com/linear-octree/linear-octree) spatial data structure library, offering detailed performance profiling across multiple algorithms, encoding schemes, and hardware configurations.
 
-This repository provides a **standalone benchmarking client** for the [linear-octree library](https://github.com/myermo/linear-octree), enabling systematic evaluation of octree-based spatial search algorithms. The suite measures:
+The suite measures:
+- **Neighbor search performance:** k-NN and fixed-radius range search throughput.
+- **Spatial encoding costs:** Hilbert/Morton SFC reordering and structure build times.
+- **Cache locality:** Index-distance histograms and SIMD efficiency.
+- **Memory footprint:** Theoretical plus empirical heap profiling.
+- **Thread scalability:** OpenMP parallelization efficiency across core counts.
+- **Hardware behavior:** PAPI performance counter integration.
 
-- **Neighbor search performance** - k-NN and fixed-radius range search throughput
-- **Spatial encoding costs** - Hilbert/Morton SFC reordering and structure build times
-- **Cache locality** - Index-distance histograms and SIMD efficiency
-- **Memory footprint** - Theoretical plus empirical heap profiling
-- **Thread scalability** - OpenMP parallelization efficiency across core counts
-- **Hardware behavior** - PAPI performance counter integration
+## ✨ Key Features
 
-### Key Features
+- **Linear-Octree Integration:** Built on [![linear-octree](https://img.shields.io/badge/GitHub-linear--octree-181717?logo=github&logoColor=white)](https://github.com/linear-octree/linear-octree) (implicit, linearized spatial index).
+- **Multi-Structure Benchmarking:** LinearOctree, PointerOctree, Nanoflann KD-Tree, Picotree, UNIBN Octree, PCL variants.
+- **Space-Filling Curves:** Hilbert & Morton encodings in 2D/3D; configurable point cloud reordering.
+- **Hardware Profiling:** PAPI integration for cache misses, TLB failures, branch mispredictions.
+- **OpenMP Scalability:** Dynamic scheduling; thread count sweeps for parallel efficiency analysis.
+- **CSV + YAML:** Command-line args or YAML config files; machine-readable output for post-processing.  
+- **Comprehensive Testing:** Google Test suite validating YAML/CLI equivalence across all parameters.
 
-- **Linear-Octree Integration** - Built on https://github.com/linear-octree/linear-octree (implicit, linearized spatial index)  
-- **Multi-Structure Benchmarking** - LinearOctree, PointerOctree, Nanoflann KD-Tree, Picotree, UNIBN Octree, PCL variants  
-- **Space-Filling Curves** - Hilbert & Morton encodings in 2D/3D; configurable point cloud reordering  
-- **Hardware Profiling** - PAPI integration for cache misses, TLB failures, branch mispredictions  
-- **OpenMP Scalability** - Dynamic scheduling; thread count sweeps for parallel efficiency analysis  
-- **CSV + YAML** - Command-line args or YAML config files; machine-readable output for post-processing  
-- **Comprehensive Testing** - Google Test suite validating YAML/CLI equivalence across all parameters
-
----
-
-## Building from Source
+## 🛠️ Building from Source
 
 ### Prerequisites
 
@@ -45,7 +42,7 @@ This repository provides a **standalone benchmarking client** for the [linear-oc
 - **Boost** 1.71+ development headers (required by PCL)
 - **Picotree** (KD-Tree variant)
 - **Eigen3** 3.4+ (required by PCL and Picotree)
-- **Linear-Octree Library** - https://github.com/linear-octree/linear-octree (required)
+- **Linear-Octree Library:** [![linear-octree](https://img.shields.io/badge/GitHub-linear--octree-181717?logo=github&logoColor=white)](https://github.com/linear-octree/linear-octree) 
 
 The following library is embedded and requires no separate installation:
 - **Nanoflann** (KD-Tree, header-only, included in linear-octree)
@@ -92,7 +89,7 @@ ctest --test-dir build/tests --output-on-failure
 
 ---
 
-## Usage
+## 🚀 Usage
 
 ### Quick Benchmark
 
@@ -225,3 +222,34 @@ The `--encodings` and `--kernels` flags accept:
 - **Kernels**: `sphere`, `cube`, `circle`, `square`
 - **Query types**: `range` (fixed-radius), `knn` (k-nearest neighbours)
 ---
+
+## 📄 Citation
+
+If you use the `linear-octree` library in academic work, please cite the
+corresponding paper:
+
+```bibtex
+@article{Viñambres2026,
+  title={Efficient Neighbourhood Search in 3D Point Clouds Through Space-Filling Curves and Linear Octrees},
+  author={Viñambres, Pablo D. and Yermo, Miguel and Alcaraz, Silvia R. and Lorenzo, Oscar G. and Rivera, Francisco F. and Cabaleiro, José C.},
+  journal={arXiv preprint arXiv:2603.06771},
+  year={2026}
+}
+```
+If you use this benchmark suite to evaluate spatial search algorithms, reproduce
+our experiments, or compare your own method against `linear-octree`, please also
+cite this repository:
+
+```bibtex
+@software{linoctree_benchmark_suite,
+  title  = {linoctree-benchmark},
+  author = {Viñambres, Pablo D. and Yermo, Miguel},
+  year   = {2026},
+  url    = {https://github.com/linear-octree/linoctree-benchmark},
+}
+```
+
+## 👥 Authorship
+
+- Pablo Díaz Viñambres (✉️ [devderivadas@gmail.com](mailto:devderivadas@gmail.com))
+- Miguel Yermo (✉️ [miguel.yermo@usc.es](mailto:miguel.yermo@usc.es))
