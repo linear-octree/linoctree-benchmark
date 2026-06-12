@@ -1,5 +1,9 @@
 # octrees-benchmark-suite
 
+[![Ubuntu 22.04](https://img.shields.io/github/actions/workflow/status/linear-octree/linoctree-benchmark/build-and-test.yml?branch=master&job=build-and-test%20(ubuntu-22.04)&label=ubuntu-22.04)](https://github.com/linear-octree/linoctree-benchmark/actions/workflows/build-and-test.yml)
+[![Ubuntu 24.04](https://img.shields.io/github/actions/workflow/status/linear-octree/linoctree-benchmark/build-and-test.yml?branch=master&job=build-and-test%20(ubuntu-24.04)&label=ubuntu-24.04)](https://github.com/linear-octree/linoctree-benchmark/actions/workflows/build-and-test.yml)
+[![Arch Linux](https://img.shields.io/github/actions/workflow/status/linear-octree/linoctree-benchmark/build-and-test.yml?branch=master&job=build-and-test%20(arch)&label=arch)](https://github.com/linear-octree/linoctree-benchmark/actions/workflows/build-and-test.yml)
+
 A comprehensive **benchmarking and testing suite** for the [**linear-octree**](https://github.com/myermo/linear-octree) spatial data structure library, offering detailed performance profiling across multiple algorithms, encoding schemes, and hardware configurations.
 
 **Linear-Octree Library**: https://github.com/linear-octree/linear-octree
