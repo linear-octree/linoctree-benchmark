@@ -42,8 +42,15 @@ else
     echo "System Boost cmake config found or already built, skipping Boost build."
 fi
 
-# Install Eigen3 (required by PCL)
-bash "${SCRIPT_DIR}/install_eigen3.sh"
+# Install Eigen3 from source only if system version is incompatible (major != 3).
+# Ubuntu ships Eigen 3.4 (compatible). Arch ships Eigen 5+ (incompatible with PCL 1.15).
+EIGEN3_SYS_MAJOR=$(pkg-config --modversion eigen3 2>/dev/null | cut -d. -f1 || echo "0")
+if [ ! -d "${EIGEN3_PREFIX}/share" ] && [ "${EIGEN3_SYS_MAJOR}" != "3" ]; then
+    echo "System Eigen3 major version ${EIGEN3_SYS_MAJOR} is incompatible, building 3.4.0 from source..."
+    bash "${SCRIPT_DIR}/install_eigen3.sh"
+else
+    echo "System Eigen3 v3 found or already built locally, skipping Eigen3 build."
+fi
 
 # Build FLANN from source
 if [ ! -f "1.9.2.tar.gz" ]; then
@@ -76,7 +83,7 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
       -DBoost_ROOT="${BOOST_PREFIX}" \
       -DBoost_NO_SYSTEM_PATHS=ON \
-      -DEigen3_DIR=${EIGEN3_PREFIX} \
+      -DEigen3_DIR=${EIGEN3_PREFIX}/share/eigen3/cmake \
       -DFLANN_ROOT=${FLANN_PREFIX} \
       -DWITH_VTK=OFF \
       -DWITH_QT=OFF \
