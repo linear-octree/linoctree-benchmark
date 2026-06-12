@@ -24,17 +24,17 @@ BOOST_VERSION=1_82_0
 BOOST_ARCHIVE="boost_${BOOST_VERSION}.tar.gz"
 BOOST_DIR="boost_${BOOST_VERSION}"
 
-#if [ ! -f "${BOOST_ARCHIVE}" ]; then
-#    wget -c "https://archives.boost.io/release/1.82.0/source/${BOOST_ARCHIVE}"
-#fi
-#tar -xvzf "${BOOST_ARCHIVE}"
-#cd "${BOOST_DIR}"
-#./bootstrap.sh --prefix="${BOOST_PREFIX}"
-#./b2 install -j 8
-#cd ..
-#
-## Install Eigen3 (required by PCL)
-#bash "${SCRIPT_DIR}/install_eigen3.sh"
+if [ ! -f "${BOOST_ARCHIVE}" ]; then
+    wget -c "https://archives.boost.io/release/1.82.0/source/${BOOST_ARCHIVE}"
+fi
+tar -xvzf "${BOOST_ARCHIVE}"
+cd "${BOOST_DIR}"
+./bootstrap.sh --prefix="${BOOST_PREFIX}"
+./b2 install --without-python -j "$(nproc)"
+cd ..
+
+# Install Eigen3 (required by PCL)
+bash "${SCRIPT_DIR}/install_eigen3.sh"
 
 # Build FLANN from source
 if [ ! -f "1.9.2.tar.gz" ]; then
