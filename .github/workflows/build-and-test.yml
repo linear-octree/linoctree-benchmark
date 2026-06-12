@@ -49,6 +49,7 @@ jobs:
             eigen yaml-cpp qhull libusb lz4 mesa libpng
 
       - name: Cache linear-octree install
+        id: cache-linoctree
         uses: actions/cache@v3
         with:
           path: ~/.local
@@ -57,6 +58,7 @@ jobs:
             ${{ matrix.os }}-linoctree-
 
       - name: Install linear-octree library
+        if: steps.cache-linoctree.outputs.cache-hit != 'true'
         run: |
           git clone --depth=1 https://github.com/linear-octree/linear-octree.git /tmp/linear-octree
           cd /tmp/linear-octree
@@ -66,6 +68,7 @@ jobs:
           cmake --install build
 
       - name: Cache benchmark dependencies (lib/)
+        id: cache-benchlib
         uses: actions/cache@v3
         with:
           path: lib
@@ -77,15 +80,19 @@ jobs:
         run: mkdir -p lib
 
       - name: Install LASlib
+        if: steps.cache-benchlib.outputs.cache-hit != 'true'
         run: bash scripts/install_laslib.sh
 
       - name: Install PAPI
+        if: steps.cache-benchlib.outputs.cache-hit != 'true'
         run: bash scripts/install_papi.sh
 
       - name: Install Picotree
+        if: steps.cache-benchlib.outputs.cache-hit != 'true'
         run: bash scripts/install_picotree.sh
 
       - name: Install PCL
+        if: steps.cache-benchlib.outputs.cache-hit != 'true'
         run: bash scripts/install_pcl.sh
 
       - name: Cache CMake build
