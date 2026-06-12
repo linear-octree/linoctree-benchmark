@@ -27,7 +27,7 @@ BOOST_DIR="boost_${BOOST_VERSION}"
 # Build Boost from source only if system Boost lacks the cmake config files that
 # PCL requires (find_package Boost CONFIG with components system + iostreams).
 # On Ubuntu 22.04/24.04 system Boost works. On Arch with Boost >= 1.83 it does not.
-BOOST_SYSTEM_CMAKE=$(find /usr/lib/cmake -name "boost_system-config.cmake" 2>/dev/null | head -1)
+BOOST_SYSTEM_CMAKE=$(find /usr -name "boost_system-config.cmake" 2>/dev/null | head -1)
 if [ ! -d "${BOOST_PREFIX}/lib" ] && [ -z "${BOOST_SYSTEM_CMAKE}" ]; then
     echo "System Boost cmake config not found, building Boost 1.82.0 from source..."
     if [ ! -f "${BOOST_ARCHIVE}" ]; then
