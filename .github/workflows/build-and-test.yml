@@ -10,16 +10,29 @@ jobs:
   build-and-test:
     strategy:
       matrix:
-        os: [ubuntu-22.04, ubuntu-24.04]
+        include:
+          - os: ubuntu-22.04
+            runner: ubuntu-22.04
+          - os: ubuntu-24.04
+            runner: ubuntu-24.04
+          - os: arch
+            runner: ubuntu-latest
+            container: archlinux:latest
       fail-fast: false
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
+    container: ${{ matrix.container }}
 
     steps:
+      - name: Install git (Arch)
+        if: matrix.os == 'arch'
+        run: pacman -Sy --noconfirm git
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Cache apt packages
+        if: matrix.os != 'arch'
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: >
@@ -27,13 +40,20 @@ jobs:
             libboost-all-dev libeigen3-dev libomp-dev libyaml-cpp-dev
             libqhull-dev libusb-1.0-0-dev liblz4-dev libgl-dev libpng-dev
 
+      - name: Install packages (Arch)
+        if: matrix.os == 'arch'
+        run: |
+          pacman -Syu --noconfirm \
+            base-devel pkgconf cmake wget unzip python ca-certificates \
+            eigen yaml-cpp qhull libusb lz4 mesa libpng
+
       - name: Cache linear-octree install
         uses: actions/cache@v3
         with:
           path: ~/.local
-          key: ${{ runner.os }}-linoctree-${{ hashFiles('scripts/install_laslib.sh') }}
+          key: ${{ matrix.os }}-linoctree-${{ hashFiles('scripts/install_laslib.sh') }}
           restore-keys: |
-            ${{ runner.os }}-linoctree-
+            ${{ matrix.os }}-linoctree-
 
       - name: Install linear-octree library
         run: |
@@ -48,9 +68,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: lib
-          key: ${{ runner.os }}-benchlib-${{ hashFiles('scripts/install_laslib.sh', 'scripts/install_papi.sh', 'scripts/install_picotree.sh', 'scripts/install_pcl.sh') }}
+          key: ${{ matrix.os }}-benchlib-${{ hashFiles('scripts/install_laslib.sh', 'scripts/install_papi.sh', 'scripts/install_picotree.sh', 'scripts/install_pcl.sh') }}
           restore-keys: |
-            ${{ runner.os }}-benchlib-
+            ${{ matrix.os }}-benchlib-
 
       - name: Create lib directory
         run: mkdir -p lib
@@ -71,9 +91,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: build
-          key: ${{ runner.os }}-cmake-${{ hashFiles('CMakeLists.txt', 'cmake/**') }}
+          key: ${{ matrix.os }}-cmake-${{ hashFiles('CMakeLists.txt', 'cmake/**') }}
           restore-keys: |
-            ${{ runner.os }}-cmake-
+            ${{ matrix.os }}-cmake-
 
       - name: Configure CMake
         run: cmake -B build -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release .
